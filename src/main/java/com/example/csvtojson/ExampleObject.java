@@ -2,24 +2,26 @@ package com.example.csvtojson;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import java.io.StringBufferInputStream;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 
 /**
 *
  */
 
-@JsonPropertyOrder({"id", "name", "age", "favouriteFruit", "amount"})
+@JsonPropertyOrder({"id", "name", "age", "favouriteFruit", "money"})
 public class ExampleObject {
 
     enum Fruit {
         APPLE, BANANA, ORANGE
     }
 
-    private Long id;
-    private String name;
-    private Integer age;
-    private Fruit favouriteFruit;
-    private BigDecimal money;
+    public Long id;
+    public String name;
+    public Integer age;
+    public Fruit favouriteFruit;
+    public BigDecimal money;
 
     public ExampleObject() {
     }
@@ -67,11 +69,11 @@ public class ExampleObject {
     @Override
     public String toString() {
         return "ExampleObject{" +
-                "id=" + id +
+                "id=" + id.toString() +
                 ", name='" + name + '\'' +
-                ", age=" + age +
+                ", age=" + age.toString() +
                 ", favouriteFruit=" + favouriteFruit +
-                ", money=" + money +
+                ", money=" + new DecimalFormat("#.00").format(money) +
                 '}';
     }
 }
