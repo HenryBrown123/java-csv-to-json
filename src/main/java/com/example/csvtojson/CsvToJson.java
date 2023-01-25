@@ -54,12 +54,12 @@ public class CsvToJson {
                 .withComments();
 
         // read data into an iterator so it can be returned as a list
-        MappingIterator<ExampleObject> exampleObjectIter = csvMapper
+        MappingIterator<ExampleObject> exampleObjectIterator = csvMapper
                 .readerWithTypedSchemaFor(ExampleObject.class)
                 .with(csvSchema)
                 .readValues(csvFile);
 
-        return exampleObjectIter.readAll();
+        return exampleObjectIterator.readAll();
     }
 
     public static void writeAsJson(List<ExampleObject> data, File targetFile) throws IOException {
