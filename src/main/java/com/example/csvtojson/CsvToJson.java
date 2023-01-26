@@ -3,11 +3,13 @@ package com.example.csvtojson;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CsvToJson {
@@ -27,52 +29,48 @@ public class CsvToJson {
         File jsonFile = new File(targetDir + targetFileName);
 
         System.out.println("\nReading csv file and storing as a list of java objects");
-        List<ExampleObject> exampleObjects = readObjectsFromCsv(csvFile);
+        List<DataObject> dataObjects = readObjectsFromCsv(csvFile);
 
         System.out.println("Printing java objects read from csv file using toString() override\n");
-        exampleObjects.forEach(System.out::println);
+        dataObjects.forEach(System.out::println);
 
         System.out.println("\nWriting java objects to json file...");
-        writeAsJson(exampleObjects, jsonFile);
+        writeAsJson(dataObjects, jsonFile);
 
         System.out.println("\nReading json file and storing data as a list of java objects..\n");
-        List<ExampleObject> jsonObjects = readObjectsFromJson(jsonFile);
+        List<DataObject> jsonObjects = readObjectsFromJson(jsonFile);
 
         System.out.println("Printing java objects read from json file\n");
         jsonObjects.forEach(System.out::println);
     }
 
-    public static List<ExampleObject> readObjectsFromCsv(File csvFile) throws IOException {
+    public static List<DataObject> readObjectsFromCsv(File csvFile) throws IOException {
         // this creates the schema object that data from the csv file will be read into
         // essentially maps each line of the csv file to a java object
         CsvMapper csvMapper = new CsvMapper();
 
-        CsvSchema csvSchema = csvMapper
-                .typedSchemaFor(ExampleObject.class)
-                .withHeader()
-                .withColumnSeparator(',')
-                .withComments();
+        CsvSchema schema = CsvSchema.emptySchema().withHeader();
 
         // read data into an iterator so it can be returned as a list
-        MappingIterator<ExampleObject> exampleObjectIterator = csvMapper
-                .readerWithTypedSchemaFor(ExampleObject.class)
-                .with(csvSchema)
+        MappingIterator<DataObject> exampleObjectIterator = csvMapper
+                .readerWithTypedSchemaFor(DataObject.class)
+                .with(schema)
                 .readValues(csvFile);
 
         return exampleObjectIterator.readAll();
     }
 
-    public static void writeAsJson(List<ExampleObject> data, File targetFile) throws IOException {
+    public static void writeAsJson(List<DataObject> data, File targetFile) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
         mapper.writeValue(targetFile, data);
     }
 
-    public static List<ExampleObject> readObjectsFromJson(File jsonFile) throws IOException {
+    public static List<DataObject> readObjectsFromJson(File jsonFile) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         // https://northcoder.com/post/jackson-object-mapper-which-way-is/
         // Using TypeReference gives better control
-        return mapper.readValue(jsonFile, new TypeReference<List<ExampleObject>>(){});
+        return mapper.readValue(jsonFile, new TypeReference<List<DataObject>>(){});
     }
 }
 
